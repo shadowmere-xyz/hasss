@@ -1,0 +1,4 @@
+/.venv/
+/dist/
+/hasss.egg-info/
+/.idea/

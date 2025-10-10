@@ -1,0 +1,24 @@
+[build-system]
+requires = [
+    "setuptools",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hasss"
+version = "0.1.1"
+description = "A command line tool to determine if a proxy list has shadowsocks proxies."
+dependencies = [
+    "requests",
+    "click"
+]
+
+authors = [
+    { name = "Jorge Alberto Díaz Orozco (Akiel)", email = "diazorozcoj@gmail.com" },
+]
+
+readme = "README.md"
+license = "GPL-3.0-or-later"
+
+[project.scripts]
+hasss = "hasss:probe"
