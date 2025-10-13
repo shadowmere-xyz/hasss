@@ -28,6 +28,8 @@ def probe(list_url: str):
     count = sum(1 for p in proxies if p.startswith('ss://'))
     if count:
         click.echo(f'Found {count} shadowsocks proxies')
+    else:
+        click.echo('No shadowsocks proxies found')
 
 
 if __name__ == '__main__':
