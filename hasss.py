@@ -38,12 +38,12 @@ def probe(list_url: str, test: bool):
 
     proxies = [p for p in lines if p.startswith("ss://")]
     if len(proxies) > 0:
-        click.echo(f"Found {len(proxies)} shadowsocks proxies")
+        click.echo(f"Found {click.style(str(len(proxies)), fg='blue')} shadowsocks proxies")
     else:
         click.echo(click.style("No shadowsocks proxies found!", fg="red"))
 
     active_count = 0
-    if test:
+    if test and len(proxies) > 0:
         click.echo("Testing proxies...")
         for proxy in proxies:
             click.echo(
@@ -70,7 +70,9 @@ def probe(list_url: str, test: bool):
                 active_count += 1
             time.sleep(0.2)
 
-        click.echo(f"Found {click.style(str(active_count), fg='red')} active shadowsocks proxies")
+        click.echo(
+            f"Found {click.style(str(active_count), fg='red' if active_count == 0 else 'blue')} active shadowsocks proxies"
+        )
 
 
 if __name__ == "__main__":
