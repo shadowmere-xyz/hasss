@@ -14,12 +14,13 @@ from urllib3.exceptions import MaxRetryError
     required=True,
 )
 @click.option("--test", is_flag=True, help="Wether to test the proxies found.")
+@click.option("--bell", is_flag=True, help="Sound bell on first active proxy found and when finished.")
 @click.option(
     "--shadowtest-url",
     help="The shadowtest instance to use.",
     default="https://shadowtest.akiel.dev",
 )
-def probe(list_url: str, test: bool, shadowtest_url: str) -> None:
+def probe(list_url: str, test: bool, bell: bool, shadowtest_url: str) -> None:
     """Check if a proxy list has shadowsocks proxies."""
     click.secho(
         "=== Checking proxies for shadowsocks === "
@@ -87,11 +88,15 @@ def probe(list_url: str, test: bool, shadowtest_url: str) -> None:
                 and proxy_info["YourFuckingIPAddress"] != ""
             ):
                 active_count += 1
+                if active_count == 1 and bell:
+                    click.echo("\a", nl=False)
             time.sleep(0.2)
 
         click.echo(
             f"Found {click.style(str(active_count), fg='red' if active_count == 0 else 'blue')} active shadowsocks proxies"
         )
+        if bell:
+            click.echo("\a", nl=False)
 
 
 if __name__ == "__main__":
