@@ -93,34 +93,28 @@ def test_proxies(bell: bool, proxies: list[str], shadowtest_url: str) -> int:
     :param shadowtest_url: the shadowtest instance URL
     :return: number of active proxies found
     """
-    click.echo("Testing proxies...")
     active_count = 0
-    for proxy in proxies:
-        click.echo(
-            click.style(
-                f"Testing proxy {proxies.index(proxy) + 1}/{len(proxies)} -- active: {active_count}",
-                fg="cyan",
-            ),
-            nl=False,
-        )
-        click.echo("\r", nl=False)
-        try:
-            proxy_info_request = requests.post(
-                f"{shadowtest_url}/v2/test", json={"address": proxy}
-            )
-        except (SSLError, ReadTimeout, MaxRetryError):
-            continue
-        if proxy_info_request.status_code != 200:
-            continue
-        proxy_info = proxy_info_request.json()
-        if (
-            "YourFuckingIPAddress" in proxy_info
-            and proxy_info["YourFuckingIPAddress"] != ""
-        ):
-            active_count += 1
-            if active_count == 1 and bell:
-                click.echo("\a", nl=False)
-        time.sleep(0.2)
+
+    with click.progressbar(proxies, label='testing proxies') as proxies_list:
+        for proxy in proxies_list:
+            proxies_list.label = f"Testing proxies (active: {active_count})"
+            try:
+                proxy_info_request = requests.post(
+                    f"{shadowtest_url}/v2/test", json={"address": proxy}
+                )
+            except (SSLError, ReadTimeout, MaxRetryError):
+                continue
+            if proxy_info_request.status_code != 200:
+                continue
+            proxy_info = proxy_info_request.json()
+            if (
+                "YourFuckingIPAddress" in proxy_info
+                and proxy_info["YourFuckingIPAddress"] != ""
+            ):
+                active_count += 1
+                if active_count == 1 and bell:
+                    click.echo("\a", nl=False)
+            time.sleep(0.2)
     return active_count
 
 
