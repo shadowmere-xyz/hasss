@@ -18,7 +18,7 @@ def probe(list_url: str, test: bool):
     """Check if a proxy list has shadowsocks proxies."""
     r = requests.get(list_url)
     if r.status_code != 200:
-        click.echo(f"Failed to fetch the list: {r.status_code}")
+        click.echo(click.style(f"Failed to fetch the list: {r.status_code}", fg="red"))
         return
 
     lines = r.text.splitlines()
@@ -28,7 +28,7 @@ def probe(list_url: str, test: bool):
         r.text,
         re.IGNORECASE,
     ):
-        click.echo("The list appears to be base64 encoded. Decoding...")
+        click.echo("The list appears to be " + click.style("base64", fg="red") + " encoded. Decoding...")
         try:
             decoded = base64.b64decode(r.text)
             lines = [line.decode("utf-8") for line in decoded.splitlines()]
@@ -70,7 +70,7 @@ def probe(list_url: str, test: bool):
                 active_count += 1
             time.sleep(0.2)
 
-        click.echo(f"Found {active_count} active shadowsocks proxies")
+        click.echo(f"Found {click.style(str(active_count), fg='red')} active shadowsocks proxies")
 
 
 if __name__ == "__main__":
