@@ -14,8 +14,21 @@ from urllib3.exceptions import MaxRetryError
     required=True,
 )
 @click.option("--test", is_flag=True, help="Wether to test the proxies found.")
-def probe(list_url: str, test: bool):
+@click.option(
+    "--shadowtest-url",
+    help="The shadowtest instance to use.",
+    default="https://shadowtest.akiel.dev",
+)
+def probe(list_url: str, test: bool, shadowtest_url: str) -> None:
     """Check if a proxy list has shadowsocks proxies."""
+    click.secho(
+        "=== Checking proxies for shadowsocks === "
+        + "\nList URL: "
+        + click.style(list_url, fg="blue")
+        + f"\nTest proxies: {click.style(str(test), fg='blue')}"
+        + f"\nShadowtest: {click.style(shadowtest_url, fg='blue')}"
+        + "\n========================================\n",
+    )
     r = requests.get(list_url)
     if r.status_code != 200:
         click.echo(click.style(f"Failed to fetch the list: {r.status_code}", fg="red"))
@@ -28,7 +41,11 @@ def probe(list_url: str, test: bool):
         r.text,
         re.IGNORECASE,
     ):
-        click.echo("The list appears to be " + click.style("base64", fg="red") + " encoded. Decoding...")
+        click.echo(
+            "The list appears to be "
+            + click.style("base64", fg="red")
+            + " encoded. Decoding..."
+        )
         try:
             decoded = base64.b64decode(r.text)
             lines = [line.decode("utf-8") for line in decoded.splitlines()]
@@ -38,7 +55,9 @@ def probe(list_url: str, test: bool):
 
     proxies = [p for p in lines if p.startswith("ss://")]
     if len(proxies) > 0:
-        click.echo(f"Found {click.style(str(len(proxies)), fg='blue')} shadowsocks proxies")
+        click.echo(
+            f"Found {click.style(str(len(proxies)), fg='blue')} shadowsocks proxies"
+        )
     else:
         click.echo(click.style("No shadowsocks proxies found!", fg="red"))
 
@@ -56,7 +75,7 @@ def probe(list_url: str, test: bool):
             click.echo("\r", nl=False)
             try:
                 proxy_info_request = requests.post(
-                    "https://shadowtest.akiel.dev/v2/test", json={"address": proxy}
+                    f"{shadowtest_url}/v2/test", json={"address": proxy}
                 )
             except (SSLError, ReadTimeout, MaxRetryError) as e:
                 continue
