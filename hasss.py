@@ -38,8 +38,7 @@ def probe(list_url: str, test: bool, bell: bool, shadowtest_url: str) -> None:
             f"Found {click.style(str(len(proxies)), fg='blue')} shadowsocks proxies"
         )
     else:
-        click.echo(click.style("No shadowsocks proxies found!", fg="red"))
-        sys.exit(1)
+        error_and_exit("No shadowsocks proxies found!")
 
     if test and len(proxies) > 0:
         active_count = test_proxies(bell, proxies, shadowtest_url)
@@ -59,8 +58,7 @@ def get_proxies(list_url: str) -> list[str]:
     """
     r = requests.get(list_url)
     if r.status_code != 200:
-        click.echo(click.style(f"Failed to fetch the list: {r.status_code}", fg="red"))
-        sys.exit(1)
+        error_and_exit(f"Failed to fetch the list: {r.status_code}")
 
     lines = r.text.splitlines()
 
@@ -78,8 +76,7 @@ def get_proxies(list_url: str) -> list[str]:
             decoded = base64.b64decode(r.text)
             lines = [line.decode("utf-8") for line in decoded.splitlines()]
         except Exception as e:
-            click.echo(f"Failed to decode the list: {e}")
-            sys.exit(1)
+            error_and_exit(f"Failed to decode the list: {e}")
 
     return [p for p in lines if p.startswith("ss://")]
 
@@ -121,6 +118,11 @@ def test_proxies(bell: bool, proxies: list[str], shadowtest_url: str) -> int:
                 click.echo("\a", nl=False)
         time.sleep(0.2)
     return active_count
+
+
+def error_and_exit(message: str) -> None:
+    click.echo(click.style(message, fg="red"))
+    sys.exit(1)
 
 
 if __name__ == "__main__":
