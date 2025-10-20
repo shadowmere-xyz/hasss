@@ -15,7 +15,11 @@ from urllib3.exceptions import MaxRetryError
     required=True,
 )
 @click.option("--test", is_flag=True, help="Wether to test the proxies found.")
-@click.option("--bell", is_flag=True, help="Sound bell on first active proxy found and when finished.")
+@click.option(
+    "--bell",
+    is_flag=True,
+    help="Sound bell on first active proxy found and when finished.",
+)
 @click.option(
     "--shadowtest-url",
     help="The shadowtest instance to use.",
@@ -63,9 +67,9 @@ def get_proxies(list_url: str) -> list[str]:
     lines = r.text.splitlines()
 
     if re.match(
-            r"^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
-            r.text,
-            re.IGNORECASE,
+        r"^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+        r.text,
+        re.IGNORECASE,
     ):
         click.echo(
             "The list appears to be "
@@ -110,8 +114,8 @@ def test_proxies(bell: bool, proxies: list[str], shadowtest_url: str) -> int:
             continue
         proxy_info = proxy_info_request.json()
         if (
-                "YourFuckingIPAddress" in proxy_info
-                and proxy_info["YourFuckingIPAddress"] != ""
+            "YourFuckingIPAddress" in proxy_info
+            and proxy_info["YourFuckingIPAddress"] != ""
         ):
             active_count += 1
             if active_count == 1 and bell:
