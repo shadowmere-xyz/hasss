@@ -103,7 +103,7 @@ def test_proxies(bell: bool, proxies: list[str], shadowtest_url: str) -> int:
             proxies_list.label = f"Testing proxies (active: {active_count})"
             try:
                 proxy_info_request = requests.post(
-                    f"{shadowtest_url}/v2/test", json={"address": proxy}
+                    f"{shadowtest_url}/v3/test", json={"address": proxy}
                 )
             except (SSLError, ReadTimeout, MaxRetryError):
                 continue
@@ -111,8 +111,8 @@ def test_proxies(bell: bool, proxies: list[str], shadowtest_url: str) -> int:
                 continue
             proxy_info = proxy_info_request.json()
             if (
-                "YourFuckingIPAddress" in proxy_info
-                and proxy_info["YourFuckingIPAddress"] != ""
+                "IPAddress" in proxy_info
+                and proxy_info["IPAddress"] != ""
             ):
                 active_count += 1
                 if active_count == 1 and bell:
