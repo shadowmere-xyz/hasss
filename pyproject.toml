@@ -6,11 +6,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hasss"
-version = "0.2.6"
+version = "0.2.7"
 description = "A command line tool to determine if a proxy list has shadowsocks proxies."
 dependencies = [
     "requests",
-    "click"
+    "click",
+    "python-dotenv"
 ]
 
 authors = [
